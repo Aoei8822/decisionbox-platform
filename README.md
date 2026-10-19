@@ -91,6 +91,8 @@ Your Data Warehouse             DecisionBox Agent            Dashboard
 Claude (direct API), OpenAI, Ollama (local), Vertex AI (Claude + Gemini on GCP), AWS Bedrock, Azure AI Foundry, LiteLLM (self-hosted OpenAI-compatible proxy). Per-project configuration; editable prompts; per-model max output token limits. Custom TLS (private-CA upload or skip-verify) for on-prem HTTPS endpoints.
 
 ### Embedding Providers
+
+OpenAI-compatible endpoints for self-hosted open-source models (Hugging Face TEI, including BGE-M3). See [Open-source embeddings setup](docs/guides/open-source-embeddings.md). No OpenAI account required.
 OpenAI, Vertex AI, Bedrock, Azure OpenAI, Voyage AI, Ollama. Used for insight/recommendation embeddings, semantic search, and /ask.
 
 ### Secrets
