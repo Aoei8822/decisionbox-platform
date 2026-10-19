@@ -139,7 +139,7 @@ func (p *provider) Embed(ctx context.Context, texts []string) ([][]float64, erro
 }
 
 func (p *provider) embedChunk(ctx context.Context, texts []string) ([][]float64, error) {
-	body, err := json.Marshal(embeddingRequest{Model: p.model, Input: texts})
+	body, err := json.Marshal(embeddingRequest{Model: p.model, Input: texts, EncodingFormat: "float"})
 	if err != nil {
 		return nil, fmt.Errorf("litellm embedding: failed to marshal request: %w", err)
 	}
@@ -192,6 +192,16 @@ func (p *provider) embedChunk(ctx context.Context, texts []string) ([][]float64,
 		if seen[d.Index] {
 			return nil, fmt.Errorf("litellm embedding: duplicate index %d in response", d.Index)
 		}
+		if len(d.Embedding) == 0 {
+			return nil, fmt.Errorf("embedding: empty vector at index %d", d.Index)
+		}
+		expected := p.dims
+		if expected == 0 && len(embResp.Data) > 0 {
+			expected = len(embResp.Data[0].Embedding)
+		}
+		if len(d.Embedding) != expected {
+			return nil, fmt.Errorf("embedding: expected %d dimensions, got %d at index %d", expected, len(d.Embedding), d.Index)
+		}
 		seen[d.Index] = true
 		result[d.Index] = d.Embedding
 	}
@@ -210,8 +220,9 @@ func (p *provider) Validate(ctx context.Context) error {
 }
 
 type embeddingRequest struct {
-	Model string   `json:"model"`
-	Input []string `json:"input"`
+	Model          string   `json:"model"`
+	Input          []string `json:"input"`
+	EncodingFormat string   `json:"encoding_format,omitempty"`
 }
 
 type embeddingResponse struct {
